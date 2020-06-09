@@ -17,26 +17,30 @@
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/ukyo/jsziptools.git"
+    "url": "git://github.com/zbyso23/jsziptools.git"
   },
-  "keywords": ["zip", "gz", "zlib"],
+  "keywords": [
+    "zip",
+    "gz",
+    "zlib"
+  ],
   "author": "Syu Kato",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/ukyo/jsziptools/issues"
+    "url": "https://github.com/zbyso23/jsziptools/issues"
   },
   "devDependencies": {
-    "@types/chai": "^3.4.30",
-    "@types/mocha": "^2.2.29",
-    "license-info-webpack-plugin": "^1.0.0",
-    "testem": "^1.10.3",
-    "ts-loader": "^4.1.0",
-    "typescript": "^2.7.2",
-    "uglifyjs-webpack-plugin": "^1.2.4",
-    "webpack": "^4.1.1",
-    "webpack-cli": "^2.0.12"
+    "@types/chai": "3.4.30",
+    "@types/mocha": "2.2.29",
+    "license-info-webpack-plugin": "1.0.0",
+    "testem": "1.10.3",
+    "ts-loader": "4.1.0",
+    "typescript": "2.7.2",
+    "uglifyjs-webpack-plugin": "1.2.4",
+    "webpack": "4.1.1",
+    "webpack-cli": "2.0.12"
   },
   "dependencies": {
-    "zlib-asm": "^1.0.7"
+    "zlib-asm": "1.0.7"
   }
 }
