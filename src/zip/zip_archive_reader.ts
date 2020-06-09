@@ -80,6 +80,14 @@ export abstract class ZipArchiveReader {
     return this.files.map(f => f.fileName);
   }
 
+  getFiles() {
+    return this.files;
+  }
+
+  getFolders() {
+    return this.folders;
+  }
+
   readFileAsArrayBuffer(fileName: string) {
     return this._decompressFile(fileName).then(bytes => bytes.buffer);
   }
