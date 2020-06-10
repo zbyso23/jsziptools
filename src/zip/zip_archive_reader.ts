@@ -49,6 +49,13 @@ export interface ZipEndCentDirHeader {
   commentlen: number;
 }
 
+export interface ZipArchiveReaderProgress {
+  progress: number;
+  debug?: any;
+}
+
+export type ZipArchiveReaderProgressCallback = (progress: ZipArchiveReaderProgress) => any;
+
 /**
  * ZipArchiveReader
  *
@@ -66,6 +73,7 @@ export abstract class ZipArchiveReader {
   protected buffer: BufferLike;
   protected chunkSize: number;
   protected encoding: string;
+  protected progressCallback: (progress: ZipArchiveReaderProgress) => any | null;
 
   protected files: ZipLocalFileHeader[];
   protected folders: ZipLocalFileHeader[];

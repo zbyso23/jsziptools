@@ -1,5 +1,7 @@
 import {
   ZipArchiveReader,
+  ZipArchiveReaderProgress,
+  ZipArchiveReaderProgressCallback,
   ZipLocalFileHeader,
   ZipCentralDirHeader,
   ZipEndCentDirHeader,
@@ -13,6 +15,7 @@ export interface ZipBlobArchiveReaderConstructorParams {
   blob: Blob;
   encoding?: string;
   chunkSize?: number;
+  progressCallback?: (progress: ZipArchiveReaderProgress) => any;
 }
 
 /**
@@ -22,11 +25,12 @@ export class ZipBlobArchiveReader extends ZipArchiveReader {
   private blob: Blob;
 
   constructor(params: ZipBlobArchiveReaderConstructorParams);
-  constructor(blob: Blob, encoding?: string, chunkSize?: number);
-  constructor(blob: any, encoding?: string, chunkSize?: number) {
+  constructor(blob: Blob, encoding?: string, progressCallback?: ZipArchiveReaderProgressCallback | null, chunkSize?: number);
+  constructor(blob: any, encoding?: string, progressCallback?: ZipArchiveReaderProgressCallback | null, chunkSize?: number) {
     super();
     this.blob = blob;
     this.encoding = encoding;
+    this.progressCallback = progressCallback;
     this.chunkSize = chunkSize;
   }
 
@@ -37,14 +41,19 @@ export class ZipBlobArchiveReader extends ZipArchiveReader {
     let localFileHeaders: ZipLocalFileHeader[] = [];
     let files: ZipLocalFileHeader[] = [];
     let folders: ZipLocalFileHeader[] = [];
-    let readChunk = (start: number, end: number) => readFileAsArrayBuffer(blob.slice(start, end));
+    let offset: number;
+
+    let readChunk = (start: number, end: number) => {
+      if(this.progressCallback) this.progressCallback({debug: [start, end, offset], progress: 0})
+      return readFileAsArrayBuffer(blob.slice(start, end));
+    }
 
     this.files = files;
     this.folders = folders;
     this.localFileHeaders = localFileHeaders;
     this.centralDirHeaders = centralDirHeaders;
 
-    let offset: number;
+    
     // validate first local file signature
     {
       const chunk = await readChunk(0, 4);

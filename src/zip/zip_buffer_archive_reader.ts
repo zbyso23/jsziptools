@@ -10,6 +10,8 @@ import {
 import { inflate } from '../core';
 import {
   ZipArchiveReader,
+  ZipArchiveReaderProgress,
+  ZipArchiveReaderProgressCallback,
   ZipLocalFileHeader,
   ZipCentralDirHeader,
   ZipEndCentDirHeader,
@@ -22,17 +24,19 @@ export interface ZipArchiveReaderConstructorParams {
   buffer: BufferLike;
   encoding?: string;
   chunkSize?: number;
+  progressCallback?: ZipArchiveReaderProgressCallback;
 }
 
 export class ZipBufferArchiveReader extends ZipArchiveReader {
   private bytes: Uint8Array;
 
   constructor(params: ZipArchiveReaderConstructorParams);
-  constructor(buffer: BufferLike, encoding?: string, chunkSize?: number);
-  constructor(buffer: any, encoding?: string, chunkSize?: number) {
+  constructor(buffer: BufferLike, encoding?: string, progressCallback?: ZipArchiveReaderProgressCallback | null, chunkSize?: number);
+  constructor(buffer: any, encoding?: string, progressCallback?: ZipArchiveReaderProgressCallback | null, chunkSize?: number) {
     super();
     this.buffer = buffer;
     this.encoding = encoding;
+    this.progressCallback = progressCallback;
     this.chunkSize = chunkSize;
     this.bytes = toBytes(this.buffer);
     this.init = this.init.bind(this);
