@@ -101,7 +101,7 @@ export class ZipBufferArchiveReader extends ZipArchiveReader {
       if(!progressCallback || !minTime.is()) continue;
       let progress = Math.floor((offset / offsetTotal) * 100);
       if(lastProgress === progress) continue;
-      progressCallback({ progress, debug: `Array` });
+      progressCallback({ progress });
       lastProgress = progress;
     }
     if(progressCallback) progressCallback({ progress: Math.floor((offset / offsetTotal) * 100) });
