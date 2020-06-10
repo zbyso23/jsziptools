@@ -43,16 +43,12 @@ export class ZipBlobArchiveReader extends ZipArchiveReader {
     let folders: ZipLocalFileHeader[] = [];
     let offset: number;
 
-    let readChunk = (start: number, end: number) => {
-      if(this.progressCallback) this.progressCallback({debug: [start, end, offset], progress: 0})
-      return readFileAsArrayBuffer(blob.slice(start, end));
-    }
+    let readChunk = (start: number, end: number) => readFileAsArrayBuffer(blob.slice(start, end));
 
     this.files = files;
     this.folders = folders;
     this.localFileHeaders = localFileHeaders;
     this.centralDirHeaders = centralDirHeaders;
-
     
     // validate first local file signature
     {
@@ -90,7 +86,11 @@ export class ZipBlobArchiveReader extends ZipArchiveReader {
       }
     });
     // read local file headers
-    for (let i = 0; i < centralDirHeaders.length; ++i) {
+    const centralDirHeadersLength = centralDirHeaders.length;
+    const offsetTotal             = this.blob.size;
+    let   lastProgress: number    = 0;
+    const progressCallback        = this.progressCallback;
+    for (let i = 0; i < centralDirHeadersLength; ++i) {
       const offset = centralDirHeaders[i].headerpos;
       const view = new DataView(await readChunk(offset + 26, offset + 30));
       const fnamelen = view.getUint16(0, true);
@@ -100,6 +100,11 @@ export class ZipBlobArchiveReader extends ZipArchiveReader {
       header.compsize = centralDirHeaders[i].compsize;
       header.uncompsize = centralDirHeaders[i].uncompsize;
       localFileHeaders.push(header);
+      if(!progressCallback) continue;
+      let progress = offset / offsetTotal;
+      if(lastProgress === progress) continue;
+      progressCallback({ progress });
+      lastProgress = progress;
     }
     return this._completeInit();
   }
