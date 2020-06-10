@@ -145,13 +145,14 @@ export abstract class ZipArchiveReader {
     });
 
     // detect encoding. cp932 or utf-8.
-    if (this.encoding == null) {
-      this.encoding = detectEncoding(concatBytes(localFileHeaders.slice(0, 100).map(header => header.fileNameAsBytes)));
+    let encoding = this.encoding;
+    if (encoding == null) {
+      encoding = detectEncoding(concatBytes(localFileHeaders.slice(0, 100).map(header => header.fileNameAsBytes)));
     }
 
     await Promise.all(
       localFileHeaders.map(h => {
-        return bytesToString(h.fileNameAsBytes, this.encoding).then(s => (h.fileName = s));
+        return bytesToString(h.fileNameAsBytes, encoding).then(s => (h.fileName = s));
       }),
     );
 

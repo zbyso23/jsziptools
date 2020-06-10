@@ -9,7 +9,11 @@ import {
   readCentralDirHeader,
   readEndCentDirHeader,
 } from './zip_archive_reader';
-import { readFileAsArrayBuffer, LOCAL_FILE_SIGNATURE, END_SIGNATURE } from '../common';
+import { 
+  readFileAsArrayBuffer, 
+  LOCAL_FILE_SIGNATURE, 
+  END_SIGNATURE
+} from '../common';
 
 export interface ZipBlobArchiveReaderConstructorParams {
   blob: Blob;
@@ -101,7 +105,7 @@ export class ZipBlobArchiveReader extends ZipArchiveReader {
       header.uncompsize = centralDirHeaders[i].uncompsize;
       localFileHeaders.push(header);
       if(!progressCallback) continue;
-      let progress = offset / offsetTotal;
+      let progress = Math.floor((offset / offsetTotal) * 100);
       if(lastProgress === progress) continue;
       progressCallback({ progress });
       lastProgress = progress;

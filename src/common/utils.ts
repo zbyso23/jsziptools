@@ -145,8 +145,8 @@ export function stringToBytes(str: string) {
  *     console.log(str);
  * });
  */
-export function bytesToString(bytes: BufferLike, encoding = 'UTF-8') {
-  return readFileAsText(new Blob([toBytes(bytes)]), encoding);
+export function bytesToString(bytes: Uint8Array, encoding = 'UTF-8') {
+  return readFileAsText(new Blob([bytes]), encoding);
 }
 
 /**
@@ -235,4 +235,31 @@ export function concatBytes(_buffers: any): Uint8Array {
     offset += buffers[i].length;
   }
   return ret;
+}
+
+
+/**
+ * MinTime
+ */
+export class MinTime
+{
+  protected msMin: number;
+  protected msLast: number;
+
+  constructor(msMin: number = 250)
+  {
+    this.msMin  = msMin;
+    this.msLast = (new Date()).getTime();
+  }
+
+  is()
+  {
+    const msNow = (new Date()).getTime();
+    if((msNow - this.msLast) >= this.msMin)
+    {
+      this.msLast = msNow;
+      return true;
+    }
+    return false;
+  }
 }

@@ -6,6 +6,7 @@ import {
   concatBytes,
   detectEncoding,
   bytesToString,
+  MinTime,
 } from '../common';
 import { inflate } from '../core';
 import {
@@ -56,6 +57,7 @@ export class ZipBufferArchiveReader extends ZipArchiveReader {
     let folders: ZipLocalFileHeader[] = [];
     let offset = bytes.byteLength - 4;
     let view = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
+    const minTime = new MinTime(20);
 
     this.files = files;
     this.folders = folders;
@@ -86,6 +88,9 @@ export class ZipBufferArchiveReader extends ZipArchiveReader {
     }
 
     // read local file headers.
+    const offsetTotal          = bytes.byteLength;
+    let   lastProgress: number = 0;
+    const progressCallback     = this.progressCallback;
     for (i = 0; i < n; ++i) {
       offset = centralDirHeaders[i].headerpos;
       localFileHeader = readLocalFileHeader(this.bytes.buffer, this.bytes.byteOffset + offset);
@@ -93,7 +98,13 @@ export class ZipBufferArchiveReader extends ZipArchiveReader {
       localFileHeader.compsize = centralDirHeaders[i].compsize;
       localFileHeader.uncompsize = centralDirHeaders[i].uncompsize;
       localFileHeaders.push(localFileHeader);
+      if(!progressCallback || !minTime.is()) continue;
+      let progress = Math.floor((offset / offsetTotal) * 100);
+      if(lastProgress === progress) continue;
+      progressCallback({ progress, debug: `Array` });
+      lastProgress = progress;
     }
+    if(progressCallback) progressCallback({ progress: Math.floor((offset / offsetTotal) * 100) });
 
     return this._completeInit();
   }

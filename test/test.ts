@@ -45,7 +45,7 @@ describe('jz.common', () => {
     it('converts Uint8Array to string.', () => {
       return jz.common
         .readFileAsArrayBuffer(new Blob(['こんにちは世界']))
-        .then(jz.common.bytesToString)
+        .then(result => jz.common.bytesToString(new Uint8Array(result)))
         .then(text => {
           expect(text).to.equal('こんにちは世界');
         });
